@@ -6,7 +6,7 @@ services:
     environment:
       - MONGODB_USERNAME=vader
       - MONGODB_PASSWORD=notmyfather
-      - MONGODB_DATABASE=starwas_planet_api
+      - MONGODB_DATABASE=starwars_planet_api
     labels:
       kompose.service.type: nodeport
     ports:

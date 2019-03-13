@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
-	"net/http"
+	"github.com/yagoazedias/star-wars-planets-api/handler"
 )
 
 func NewServer() *negroni.Negroni {
@@ -23,13 +23,11 @@ func NewServer() *negroni.Negroni {
 }
 
 func initRouters(mx *mux.Router, formatter *render.Render) {
-	mx.HandleFunc("/health", healthCheckHandler(formatter)).Methods("GET")
-}
 
-func healthCheckHandler(formatter *render.Render) http.HandlerFunc {
-	return func(w http.ResponseWriter, request *http.Request) {
-		_ = formatter.JSON(w, http.StatusOK, struct {
-			Status string
-		}{"Ok"})
-	}
+	health := handler.Health{}
+	planet := handler.Planet{}
+
+	mx.HandleFunc("/health", health.Check(formatter)).Methods("GET")
+	mx.HandleFunc("/planet", planet.Search(formatter)).Methods("GET")
+	mx.HandleFunc("/planet", planet.Create(formatter)).Methods("POST")
 }
