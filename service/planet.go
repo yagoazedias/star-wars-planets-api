@@ -2,8 +2,10 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/gorilla/mux"
+	"github.com/yagoazedias/star-wars-planets-api/client"
 	"github.com/yagoazedias/star-wars-planets-api/domain"
 	"github.com/yagoazedias/star-wars-planets-api/helpers"
 	"github.com/yagoazedias/star-wars-planets-api/repository"
@@ -20,6 +22,18 @@ func (m *Planet) Search() ([]domain.Planet, int, error)  {
 
 	if err != nil {
 		return nil, http.StatusInternalServerError, helpers.NewError("An unexpected error has occurred")
+	}
+
+	for i, planet := range planets {
+		swapi := client.Swapi{}
+
+		planetAttendanceInFilms, err := swapi.GetPlanetAttendance(&planet)
+
+		if err != nil {
+			fmt.Printf("Error at swapi integration %s", err)
+		}
+
+		planets[i].Count = planetAttendanceInFilms
 	}
 
 	return planets, http.StatusOK, nil
@@ -42,8 +56,18 @@ func (m *Planet) Lookup(request *http.Request) (*domain.Planet, int, error)  {
 	planet, err := m.Repository.Lookup(bson.ObjectIdHex(vars["id"]))
 
 	if err != nil {
-		return nil, http.StatusInternalServerError, helpers.NewError("An unexpected error has occurred")
+		return nil, http.StatusNotFound, helpers.NewError("Planet not found")
 	}
+
+	swapi := client.Swapi{}
+
+	planetAttendanceInFilms, err := swapi.GetPlanetAttendance(planet)
+
+	if err != nil {
+		fmt.Printf("swapi not avaiable %s", err)
+	}
+
+	planet.Count = planetAttendanceInFilms
 
 	return planet, http.StatusOK, nil
 }

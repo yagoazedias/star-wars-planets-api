@@ -12,7 +12,7 @@ type Planet struct {
 	Name         string         `bson:"name"         json:"name,omitempty"`
 	Weather      string         `bson:"weather"      json:"weather,omitempty"`
 	Terrain      string         `bson:"terrain"      json:"terrain,omitempty"`
-	Count        string         `bson:"description"  json:"count,omitempty"`
+	Count        int            `bson:"count"        json:"count"`
 	CreatedAt    *time.Time     `bson:"created_at"   json:"created_at,omitempty"`
 	UpdatedAt    *time.Time     `bson:"updated_at"   json:"updated_at,omitempty"`
 	DeletedAt    *time.Time     `bson:"deleted_at"   json:"deleted_at,omitempty"`
@@ -22,7 +22,7 @@ type Planet struct {
 type CreatePlanet struct {
 	Name         string         `bson:"name"         json:"name"`
 	Weather      string         `bson:"weather"      json:"weather"`
-	Terrain  string             `bson:"description"  json:"terrain"`
+	Terrain  string             `bson:"terrain"  json:"terrain"`
 }
 
 // Warning about timezone issues:

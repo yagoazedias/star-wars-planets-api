@@ -67,7 +67,6 @@ func (*Planet) Update(planet domain.Planet) (*domain.Planet, error) {
 
 	Mongo.Connect()
 	c := Mongo.db.C(planet.CollectionName())
-
 	err := c.Find(planet.Me()).One(&planet)
 
 	if err != nil {

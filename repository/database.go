@@ -34,18 +34,13 @@ func (m *MongoDB) Connect() {
 
 func getFromEnvIfExists() MongoDB {
 
-	var host = os.Getenv("DB_HOST")
-	var database = os.Getenv("DB_NAME")
-	var password = os.Getenv("DB_PASSWORD")
-	var user = os.Getenv("DB_USER")
+	host, envHost := os.LookupEnv("DB_HOST")
+	database, envDatabase := os.LookupEnv("DB_NAME")
+	password, envPassword := os.LookupEnv("DB_PASSWORD")
+	user, envUser := os.LookupEnv("DB_USER")
+	port, envPort := os.LookupEnv("DB_PORT")
 
-	_, envExist := os.LookupEnv("DB_HOST")
-	_, envDatabase := os.LookupEnv("DB_NAME")
-	_, envPassword := os.LookupEnv("DB_PASSWORD")
-	_, envUser := os.LookupEnv("DB_USER")
-	_, envPort := os.LookupEnv("DB_PORT")
-
-	if !envExist || !envDatabase || !envPassword || !envUser || !envPort {
+	if !envHost || !envDatabase || !envPassword || !envUser || !envPort {
 		return MongoDB {
 			Host: environment.DATABASE_HOST,
 			Database: environment.DATABASE_NAME,
@@ -55,7 +50,7 @@ func getFromEnvIfExists() MongoDB {
 		}
 	}
 
-	newMongoDB := MongoDB{Host: host, Database: database, Password: password, User: user}
+	newMongoDB := MongoDB{Host: host, Database: database, Password: password, User: user, Port: port}
 
 	return newMongoDB
 }

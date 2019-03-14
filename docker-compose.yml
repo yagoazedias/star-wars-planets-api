@@ -13,6 +13,8 @@ services:
       - '27017:27017'
   redis:
     container_name: redis
-    image: 'redis:alpine'
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_PASSWORD=notmyfather
     ports:
       - '6379:6379'
