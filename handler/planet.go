@@ -1,28 +1,56 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/unrolled/render"
+	"github.com/yagoazedias/star-wars-planets-api/service"
 	"net/http"
 )
 
-type Planet struct {}
+type Planet struct {
+	Service service.Planet
+}
 
-func (*Planet) Search(formatter *render.Render) http.HandlerFunc {
+func (h *Planet) Search(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, request *http.Request) {
-		_ = formatter.JSON(w, http.StatusOK, []struct {
-			Name string
-			Weather string
-			Soil string
-		}{{"Tatooine", "hot", "sandy"}, {"Tatooine", "hot", "sandy"}, {"Tatooine", "hot", "sandy"}})
+		planets, status, err := h.Service.Search()
+
+		if err != nil {
+			_ = formatter.JSON(w, status, bson.M{
+				"message": fmt.Sprintf("%q", err.Error()),
+			})
+		} else {
+			_ = formatter.JSON(w, status, planets)
+		}
 	}
 }
 
-func (*Planet) Create(formatter *render.Render) http.HandlerFunc {
+func (h *Planet) Lookup(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, request *http.Request) {
-		_ = formatter.JSON(w, http.StatusCreated, struct {
-			Name string
-			Weather string
-			Soil string
-		}{"Tatooine", "hot", "sandy"})
+		planet, status, err := h.Service.Lookup(request)
+
+		if err != nil {
+			_ = formatter.JSON(w, status, bson.M{
+				"message": fmt.Sprintf("%q", err.Error()),
+			})
+		} else {
+			_ = formatter.JSON(w, status, planet)
+		}
+	}
+}
+
+func (h *Planet) Create(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, request *http.Request) {
+
+		newPlanet, status, err := h.Service.Create(request)
+
+		if err != nil {
+			_ = formatter.JSON(w, status, bson.M{
+				"message": fmt.Sprintf("%q", err.Error()),
+			})
+		} else {
+			_ = formatter.JSON(w, status, newPlanet)
+		}
 	}
 }

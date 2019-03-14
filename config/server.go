@@ -1,4 +1,4 @@
-package service
+package config
 
 import (
 	"github.com/gorilla/mux"
@@ -30,4 +30,5 @@ func initRouters(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/health", health.Check(formatter)).Methods("GET")
 	mx.HandleFunc("/planet", planet.Search(formatter)).Methods("GET")
 	mx.HandleFunc("/planet", planet.Create(formatter)).Methods("POST")
+	mx.HandleFunc("/planet/id/{id}", planet.Lookup(formatter)).Methods("GET")
 }

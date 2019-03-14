@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/yagoazedias/star-wars-planets-api/service"
+	"github.com/yagoazedias/star-wars-planets-api/config"
 	"os"
 )
 
@@ -12,7 +12,7 @@ func main() {
 		port = "4000"
 	}
 
-	server := service.NewServer()
+	server := config.NewServer()
 	server.Run(":"  + port)
 }
 

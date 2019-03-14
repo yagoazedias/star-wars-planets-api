@@ -1,51 +1,63 @@
 package repository
 
 import (
-	"github.com/yagoazedias/star-wars-planets-api/config"
+	"fmt"
+	"github.com/yagoazedias/star-wars-planets-api/environment"
 	"gopkg.in/mgo.v2"
 	"log"
 	"os"
 )
 
-var db *mgo.Database
-
-type Mongo struct {
+type MongoDB struct {
 	Host   string
 	Database string
 	Password string
+	Port string
 	User string
+	db *mgo.Database
 }
 
-func (m *Mongo) Connect() {
-	session, err := mgo.Dial(m.Host)
+func (m *MongoDB) ConnectionUrl() string {
+	return fmt.Sprintf(
+		"mongodb://%s:%s@%s:%s/%s",
+			m.User, m.Password, m.Host, m.Port, m.Database,
+	)
+}
+
+func (m *MongoDB) Connect() {
+	session, err := mgo.Dial(m.ConnectionUrl())
 	if err != nil {
 		log.Fatal(err)
 	}
-	db = session.DB(m.Database)
+	m.db = session.DB(m.Database)
 }
 
-func getFromEnvIfExists() Mongo {
+func getFromEnvIfExists() MongoDB {
 
 	var host = os.Getenv("DB_HOST")
 	var database = os.Getenv("DB_NAME")
 	var password = os.Getenv("DB_PASSWORD")
 	var user = os.Getenv("DB_USER")
 
-	_, hostExist := os.LookupEnv("DB_HOST")
-	_, hostDatabase := os.LookupEnv("DB_NAME")
-	_, hostPassword := os.LookupEnv("DB_PASSWORD")
-	_, hostUser := os.LookupEnv("DB_USER")
+	_, envExist := os.LookupEnv("DB_HOST")
+	_, envDatabase := os.LookupEnv("DB_NAME")
+	_, envPassword := os.LookupEnv("DB_PASSWORD")
+	_, envUser := os.LookupEnv("DB_USER")
+	_, envPort := os.LookupEnv("DB_PORT")
 
-	if !hostExist || !hostDatabase || !hostPassword || !hostUser {
-		return Mongo {
-			Host: config.DATABASE_HOST,
-			Database: config.DATABASE_NAME,
-			Password: config.DATABASE_PASSWORD,
-			User: config.DATABASE_USER,
+	if !envExist || !envDatabase || !envPassword || !envUser || !envPort {
+		return MongoDB {
+			Host: environment.DATABASE_HOST,
+			Database: environment.DATABASE_NAME,
+			Password: environment.DATABASE_PASSWORD,
+			User: environment.DATABASE_USER,
+			Port: environment.DATABASE_PORT,
 		}
 	}
 
-	return Mongo{Host: host, Database: database, Password: password, User: user}
+	newMongoDB := MongoDB{Host: host, Database: database, Password: password, User: user}
+
+	return newMongoDB
 }
 
-var mongo = getFromEnvIfExists()
+var Mongo = getFromEnvIfExists()
