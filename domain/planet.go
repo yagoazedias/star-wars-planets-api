@@ -37,6 +37,16 @@ func (c *CreatePlanet) ToBson() bson.M {
 	}
 }
 
+func (c *Planet) ToBson() bson.M {
+	return bson.M{
+		"name": c.Name,
+		"weather": c.Weather,
+		"terrain": c.Terrain,
+		"created_at": c.CreatedAt,
+		"updated_at": time.Now(),
+	}
+}
+
 func (c *CreatePlanet) Me() bson.M {
 	return bson.M{
 		"name": c.Name,
@@ -50,6 +60,22 @@ func (c *Planet) Me() bson.M {
 }
 
 func (c *CreatePlanet) IsValid() (bool, error) {
+	if c.Name == "" {
+		return false, helpers.NewError("Planets must have a name")
+	}
+
+	if c.Terrain == "" {
+		return false, helpers.NewError("Planets must have a terrain")
+	}
+
+	if c.Weather == "" {
+		return false, helpers.NewError("Planets must have a weather")
+	}
+
+	return true, nil
+}
+
+func (c *Planet) IsValid() (bool, error) {
 	if c.Name == "" {
 		return false, helpers.NewError("Planets must have a name")
 	}

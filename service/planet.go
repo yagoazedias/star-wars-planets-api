@@ -68,3 +68,35 @@ func (m *Planet) Create(request *http.Request) (*domain.Planet, int, error) {
 
 	return planet, http.StatusOK, nil
 }
+
+func (m *Planet) Update(request *http.Request) (*domain.Planet, int, error) {
+	var planet = domain.Planet{}
+
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&planet)
+	vars := mux.Vars(request)
+
+	if vars["id"] == "" {
+		return nil, http.StatusBadRequest, helpers.NewError("Url Param 'id' is missing")
+	}
+
+	isUrlIdValid := govalidator.IsMongoID(vars["id"])
+
+	if !isUrlIdValid {
+		return nil, http.StatusBadRequest, helpers.NewError("Not a valid id")
+	}
+
+	ok, err := planet.IsValid()
+
+	if !ok || err != nil {
+		return nil, http.StatusBadRequest, err
+	}
+
+	nPlanet, err := m.Repository.Update(planet)
+
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return nPlanet, http.StatusOK, nil
+}

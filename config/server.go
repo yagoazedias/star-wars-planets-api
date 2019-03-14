@@ -31,4 +31,5 @@ func initRouters(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/planet", planet.Search(formatter)).Methods("GET")
 	mx.HandleFunc("/planet", planet.Create(formatter)).Methods("POST")
 	mx.HandleFunc("/planet/id/{id}", planet.Lookup(formatter)).Methods("GET")
+	mx.HandleFunc("/planet/id/{id}", planet.Update(formatter)).Methods("PUT")
 }

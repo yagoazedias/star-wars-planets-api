@@ -61,3 +61,31 @@ func (*Planet) Create(newPlanet domain.CreatePlanet) (*domain.Planet, error) {
 
 	return &planet, nil
 }
+
+func (*Planet) Update(planet domain.Planet) (*domain.Planet, error) {
+	var updatedPlanet domain.Planet
+
+	Mongo.Connect()
+	c := Mongo.db.C(planet.CollectionName())
+
+	err := c.Find(planet.Me()).One(&planet)
+
+	if err != nil {
+		return nil, helpers.NewError("Planet does not exists")
+	}
+
+	updatedPlanet = domain.Planet{
+		ID: planet.ID,
+		Name: planet.Name,
+		Terrain: planet.Terrain,
+		Weather: planet.Weather,
+	}
+
+	err = c.Update(planet.Me(), updatedPlanet.ToBson())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &planet, nil
+}
