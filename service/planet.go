@@ -11,14 +11,19 @@ import (
 	"github.com/yagoazedias/star-wars-planets-api/repository"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strconv"
 )
 
 type Planet struct {
 	Repository repository.Planet
 }
 
-func (m *Planet) Search() ([]domain.Planet, int, error)  {
-	planets, err := m.Repository.Search()
+func (m *Planet) Search(offset string, limit string) ([]domain.Planet, int, error)  {
+
+	parsedOffset, err := strconv.Atoi(offset)
+	parsedLimit, err := strconv.Atoi(limit)
+
+	planets, err := m.Repository.Search(parsedOffset, parsedLimit)
 
 	if err != nil {
 		return nil, http.StatusInternalServerError, helpers.NewError("An unexpected error has occurred")

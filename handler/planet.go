@@ -14,7 +14,12 @@ type Planet struct {
 
 func (h *Planet) Search(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, request *http.Request) {
-		planets, status, err := h.Service.Search()
+
+		offset := request.URL.Query().Get("offset")
+		limit := request.URL.Query().Get("limit")
+
+		planets, status, err := h.Service.Search(offset, limit)
+
 
 		if err != nil {
 			_ = formatter.JSON(w, status, bson.M{

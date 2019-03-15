@@ -9,7 +9,7 @@ import (
 )
 
 type Redis struct {
-	db *redis.Client
+	DB *redis.Client
 }
 
 func NewRedisClient() Redis {
@@ -25,13 +25,13 @@ func NewRedisClient() Redis {
 	nDatabase, err := strconv.Atoi(database)
 
 	if !envDatabase || !envHost || !envPassword || !envPort || err != nil {
-		c.db = redis.NewClient(&redis.Options{
+		c.DB = redis.NewClient(&redis.Options{
 			Addr:     fmt.Sprintf("%s:%s", environment.REDIS_HOST, environment.REDIS_PORT),
 			Password: environment.REDIS_PASSWORD, // no password set
 			DB:       environment.REDIS_DATABASE,  // use default DB
 		})
 	} else {
-		c.db = redis.NewClient(&redis.Options{
+		c.DB = redis.NewClient(&redis.Options{
 			Addr:     fmt.Sprintf("%s:%s", host, port),
 			Password: password, // no password set
 			DB: nDatabase,
@@ -40,5 +40,3 @@ func NewRedisClient() Redis {
 
 	return c
 }
-
-var Cache = NewRedisClient()

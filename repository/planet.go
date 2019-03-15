@@ -8,14 +8,14 @@ import (
 
 type Planet struct {}
 
-func (*Planet) Search() ([]domain.Planet, error) {
+func (*Planet) Search(offset int, limit int) ([]domain.Planet, error) {
 	var planets []domain.Planet
 	var d = domain.Planet{}
 
 	Mongo.Connect()
 
 	c := Mongo.db.C(d.CollectionName())
-	err := c.Find(bson.M{}).All(&planets)
+	err := c.Find(bson.M{}).Skip(offset).Limit(limit).All(&planets)
 
 	if err != nil {
 		return nil, err
