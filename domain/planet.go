@@ -22,7 +22,7 @@ type Planet struct {
 type CreatePlanet struct {
 	Name         string         `bson:"name"         json:"name"`
 	Weather      string         `bson:"weather"      json:"weather"`
-	Terrain  string             `bson:"terrain"  json:"terrain"`
+	Terrain  string             `bson:"terrain"      json:"terrain"`
 }
 
 // Warning about timezone issues:

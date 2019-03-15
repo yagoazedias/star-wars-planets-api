@@ -5,21 +5,32 @@ import (
 	"github.com/yagoazedias/star-wars-planets-api/domain"
 	"github.com/yagoazedias/star-wars-planets-api/helpers"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type Planet struct {}
 
-func (*Planet) Search(offset int, limit int) ([]domain.Planet, error) {
+func (*Planet) Search(offset int, limit int, name string) ([]domain.Planet, error) {
 	var planets []domain.Planet
 	var d = domain.Planet{}
 
 	Mongo.Connect()
 
 	c := Mongo.db.C(d.CollectionName())
-	err := c.Find(bson.M{}).Skip(offset).Limit(limit).All(&planets)
 
-	if err != nil {
-		return nil, err
+	if name == "" {
+		err := c.Find(bson.M{}).Skip(offset).Limit(limit).All(&planets)
+
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		err := c.Find(bson.M{"name": name}).All(&planets)
+
+		if err != nil {
+			log.Printf("Not found: %s", err)
+		}
 	}
 
 	return planets, nil
@@ -63,31 +74,26 @@ func (*Planet) Create(newPlanet domain.CreatePlanet) (*domain.Planet, error) {
 	return &planet, nil
 }
 
-func (*Planet) Update(planet domain.Planet) (*domain.Planet, error) {
+func (*Planet) Update(planet domain.Planet, id string) (*domain.Planet, error) {
 	var updatedPlanet domain.Planet
 
 	Mongo.Connect()
 	c := Mongo.db.C(planet.CollectionName())
-	err := c.Find(planet.Me()).One(&planet)
-
-	if err != nil {
-		return nil, helpers.NewError("Planet does not exists")
-	}
 
 	updatedPlanet = domain.Planet{
-		ID: planet.ID,
+		ID: bson.ObjectIdHex(id),
 		Name: planet.Name,
 		Terrain: planet.Terrain,
 		Weather: planet.Weather,
 	}
 
-	err = c.Update(planet.Me(), updatedPlanet.ToBson())
+	err := c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, updatedPlanet.ToBson())
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &planet, nil
+	return &updatedPlanet, nil
 }
 
 func (*Planet) Delete(id string) error {

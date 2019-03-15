@@ -17,9 +17,9 @@ func (h *Planet) Search(formatter *render.Render) http.HandlerFunc {
 
 		offset := request.URL.Query().Get("offset")
 		limit := request.URL.Query().Get("limit")
+		name := request.URL.Query().Get("name")
 
-		planets, status, err := h.Service.Search(offset, limit)
-
+		planets, status, err := h.Service.Search(offset, limit, name)
 
 		if err != nil {
 			_ = formatter.JSON(w, status, bson.M{

@@ -18,12 +18,12 @@ type Planet struct {
 	Repository repository.Planet
 }
 
-func (m *Planet) Search(offset string, limit string) ([]domain.Planet, int, error)  {
+func (m *Planet) Search(offset, limit, name string) ([]domain.Planet, int, error)  {
 
 	parsedOffset, err := strconv.Atoi(offset)
 	parsedLimit, err := strconv.Atoi(limit)
 
-	planets, err := m.Repository.Search(parsedOffset, parsedLimit)
+	planets, err := m.Repository.Search(parsedOffset, parsedLimit, name)
 
 	if err != nil {
 		return nil, http.StatusInternalServerError, helpers.NewError("An unexpected error has occurred")
@@ -39,6 +39,11 @@ func (m *Planet) Search(offset string, limit string) ([]domain.Planet, int, erro
 		}
 
 		planets[i].Count = planetAttendanceInFilms
+	}
+
+	if planets == nil {
+		planets = []domain.Planet{}
+		return planets, http.StatusOK, nil
 	}
 
 	return planets, http.StatusOK, nil
@@ -121,10 +126,10 @@ func (m *Planet) Update(request *http.Request) (*domain.Planet, int, error) {
 		return nil, http.StatusBadRequest, err
 	}
 
-	nPlanet, err := m.Repository.Update(planet)
+	nPlanet, err := m.Repository.Update(planet, vars["id"])
 
 	if err != nil {
-		return nil, http.StatusInternalServerError, err
+		return nil, http.StatusNotFound, err
 	}
 
 	return nPlanet, http.StatusOK, nil
