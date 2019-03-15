@@ -129,3 +129,26 @@ func (m *Planet) Update(request *http.Request) (*domain.Planet, int, error) {
 
 	return nPlanet, http.StatusOK, nil
 }
+
+func (m *Planet) Delete(request *http.Request) (int, error) {
+
+	vars := mux.Vars(request)
+
+	if vars["id"] == "" {
+		return http.StatusBadRequest, helpers.NewError("Url Param 'id' is missing")
+	}
+
+	isUrlIdValid := govalidator.IsMongoID(vars["id"])
+
+	if !isUrlIdValid {
+		return http.StatusBadRequest, helpers.NewError("Not a valid id")
+	}
+
+	err := m.Repository.Delete(vars["id"])
+
+	if err != nil {
+		return http.StatusNotFound, helpers.NewError("Planet not found")
+	}
+
+	return http.StatusNoContent, nil
+}

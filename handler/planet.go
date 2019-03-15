@@ -74,3 +74,18 @@ func (h *Planet) Update(formatter *render.Render) http.HandlerFunc {
 		}
 	}
 }
+
+func (h *Planet) Delete(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, request *http.Request) {
+
+		status, err := h.Service.Delete(request)
+
+		if err != nil {
+			_ = formatter.JSON(w, status, bson.M{
+				"message": fmt.Sprintf("%q", err.Error()),
+			})
+		} else {
+			_ = formatter.JSON(w, status, nil)
+		}
+	}
+}

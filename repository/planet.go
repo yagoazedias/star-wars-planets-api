@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/yagoazedias/star-wars-planets-api/domain"
 	"github.com/yagoazedias/star-wars-planets-api/helpers"
 	"gopkg.in/mgo.v2/bson"
@@ -87,4 +88,19 @@ func (*Planet) Update(planet domain.Planet) (*domain.Planet, error) {
 	}
 
 	return &planet, nil
+}
+
+func (*Planet) Delete(id string) error {
+	var planet domain.Planet
+
+	Mongo.Connect()
+	c := Mongo.db.C(planet.CollectionName())
+	err := c.Remove(bson.M{"_id": bson.ObjectIdHex(id)})
+
+	if err != nil {
+		fmt.Printf("Error on remove planet %s", id)
+		return err
+	}
+
+	return nil
 }
