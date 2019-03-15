@@ -97,7 +97,7 @@ func (m *Planet) Create(request *http.Request) (*domain.Planet, int, error) {
 	planet, err := m.Repository.Create(newPlanet)
 
 	if err != nil {
-		return nil, http.StatusInternalServerError, err
+		return nil, http.StatusConflict, err
 	}
 
 	return planet, http.StatusOK, nil
