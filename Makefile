@@ -1,2 +1,11 @@
+setup:
+	docker-compose up -d
+
 run:
-	@go run main.go
+	make setup && go run main.go
+
+test:
+	make setup && go test ./...
+
+build:
+	go build main.go
