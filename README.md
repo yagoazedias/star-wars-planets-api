@@ -60,3 +60,8 @@ curl -X GET http://localhost:4000/planet\?name\={name}
 ```bash
 curl -X DELETE http://localhost:4000/planet/id/{id}
 ```
+
+## Troubleshooting
+
+#### Tests failing in make tests
+- The application test is end-to-end so it going to use your local database to persist data. Be sure that you have your container up to date with `make setup`

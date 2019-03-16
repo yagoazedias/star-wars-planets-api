@@ -96,15 +96,18 @@ func (m *Planet) Create(request *http.Request) (*domain.Planet, int, error) {
 
 	planet, err := m.Repository.Create(newPlanet)
 
-	swapi := client.Swapi{}
+	if planet != nil {
 
-	planetAttendanceInFilms, err := swapi.GetPlanetAttendance(planet)
+		swapi := client.Swapi{}
 
-	if err != nil {
-		fmt.Printf("swapi not avaiable %s", err)
+		planetAttendanceInFilms, err := swapi.GetPlanetAttendance(planet)
+
+		if err != nil {
+			fmt.Printf("swapi not avaiable %s", err)
+		}
+
+		planet.Count = planetAttendanceInFilms
 	}
-
-	planet.Count = planetAttendanceInFilms
 
 	if err != nil {
 		return nil, http.StatusConflict, err
