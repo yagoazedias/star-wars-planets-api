@@ -6,6 +6,7 @@ import (
 	"github.com/yagoazedias/star-wars-planets-api/helpers"
 	"gopkg.in/mgo.v2/bson"
 	"log"
+	"time"
 )
 
 type Planet struct {}
@@ -80,14 +81,26 @@ func (*Planet) Update(planet domain.Planet, id string) (*domain.Planet, error) {
 	Mongo.Connect()
 	c := Mongo.db.C(planet.CollectionName())
 
+	var oldVersion domain.Planet
+
+	err := c.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&oldVersion)
+
+	if err != nil {
+		return nil, err
+	}
+
+	mTime := time.Now()
+
 	updatedPlanet = domain.Planet{
 		ID: bson.ObjectIdHex(id),
 		Name: planet.Name,
 		Terrain: planet.Terrain,
 		Weather: planet.Weather,
+		CreatedAt: oldVersion.CreatedAt,
+		UpdatedAt: &mTime,
 	}
 
-	err := c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, updatedPlanet.ToBson())
+	err = c.Update(bson.M{"_id": bson.ObjectIdHex(id)}, updatedPlanet.ToBson())
 
 	if err != nil {
 		return nil, err
