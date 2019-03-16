@@ -272,3 +272,82 @@ func TestPlanetCreateForNotValidBody(t *testing.T) {
 		}
 	}
 }
+
+func TestPlanetSearchByName(t *testing.T) {
+	formatter := render.New(render.Options{
+		IndentJSON: true,
+	})
+
+	p := Planet{}
+
+	var planet domain.Planet
+
+	req, err := http.NewRequest("POST", "/planet", bytes.NewBuffer([]byte(`{"name": "Earth","weather": "Hot","terrain": "Low"}`)))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(p.Create(formatter))
+
+	handler.ServeHTTP(rr, req)
+
+	err = json.NewDecoder(rr.Body).Decode(&planet)
+
+	if err != nil {
+		t.Errorf("Was not possible to parse payload content %v", err)
+	}
+
+	if status := rr.Code; status != http.StatusCreated {
+		t.Errorf("Create Handler returned wrong status code: got %v want %v",
+			status, http.StatusCreated)
+	}
+
+	req, err = http.NewRequest("GET", "/planet?name=Earth", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+	handler = http.HandlerFunc(p.Search(formatter))
+
+	handler.ServeHTTP(recorder, req)
+
+	var planets []domain.Planet
+
+	err = json.NewDecoder(recorder.Body).Decode(&planets)
+
+	if err != nil {
+		t.Errorf("Was not possible to parse payload content %v", err)
+	}
+
+	if len(planets) == 0 {
+		t.Error("Handler haven't return any planet")
+	}
+
+	if planets[0].Name != planet.Name {
+		t.Errorf("Planets names does not match: got %v want %v",
+			planets[0].Name, planet.Name)
+	}
+
+	if status := recorder.Code; status != http.StatusOK {
+		t.Errorf("Create Handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	req, err = http.NewRequest("DELETE", fmt.Sprintf("/planet/id/%s", planet.ID.Hex()), nil)
+
+	deleteRecorder := httptest.NewRecorder()
+	handler = http.HandlerFunc(p.Delete(formatter))
+
+	req = mux.SetURLVars(req, map[string]string{"id": planet.ID.Hex()})
+
+	handler.ServeHTTP(deleteRecorder, req)
+
+	if status := deleteRecorder.Code; status != http.StatusNoContent {
+		t.Errorf("Was not possible to delete planet after create it. Got: %v, expeted: %v",
+			status, http.StatusNoContent)
+	}
+}
