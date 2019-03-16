@@ -100,7 +100,7 @@ func (m *Planet) Create(request *http.Request) (*domain.Planet, int, error) {
 		return nil, http.StatusConflict, err
 	}
 
-	return planet, http.StatusOK, nil
+	return planet, http.StatusCreated, nil
 }
 
 func (m *Planet) Update(request *http.Request) (*domain.Planet, int, error) {
