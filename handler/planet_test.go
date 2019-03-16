@@ -229,3 +229,46 @@ func TestPlanetLookupHandler(t *testing.T) {
 			status, http.StatusNoContent)
 	}
 }
+
+func TestPlanetCreateForNotValidBody(t *testing.T) {
+
+	formatter := render.New(render.Options{
+		IndentJSON: true,
+	})
+
+	buffers := []*bytes.Buffer{
+		bytes.NewBuffer([]byte(`{"name": "Earth","weather": "Hot"}`)),
+		bytes.NewBuffer([]byte(`{"name": "Earth","terrain": "Low"}`)),
+		bytes.NewBuffer([]byte(`{"terrain": "Low"}`)),
+		bytes.NewBuffer([]byte(`{"weather": "Hot","terrain": "Low"}`)),
+		bytes.NewBuffer([]byte(`"Not Valid Json Object"`)),
+	}
+
+	for _, buffer := range buffers {
+		p := Planet{}
+
+		var planet domain.Planet
+
+		req, err := http.NewRequest("POST", "/planet", buffer)
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(p.Create(formatter))
+
+		handler.ServeHTTP(rr, req)
+
+		err = json.NewDecoder(rr.Body).Decode(&planet)
+
+		if err != nil {
+			t.Errorf("Was not possible to parse payload content %v", err)
+		}
+
+		if status := rr.Code; status != http.StatusBadRequest {
+			t.Errorf("Create Handler returned wrong status code: got %v want %v",
+				status, http.StatusBadRequest)
+		}
+	}
+}
