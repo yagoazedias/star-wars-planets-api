@@ -61,6 +61,11 @@ curl -X GET http://localhost:4000/planet\?name\={name}
 curl -X DELETE http://localhost:4000/planet/id/{id}
 ```
 
+- To get all planets with pagination
+```bash
+curl -X GET http://localhost:4000/planet\?offset\=1\&limit\=6
+```
+
 ## Troubleshooting
 
 #### Tests failing in make tests
