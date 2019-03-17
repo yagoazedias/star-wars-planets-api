@@ -28,32 +28,48 @@ func TestPlanetCreateAndDeleteHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	creationRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(p.Create(formatter))
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(creationRecorder, req)
 
-	err = json.NewDecoder(rr.Body).Decode(&planet)
+	err = json.NewDecoder(creationRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
 	}
 
-	if status := rr.Code; status != http.StatusCreated {
+	if status := creationRecorder.Code; status != http.StatusCreated {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusCreated)
 	}
 
+	req, err = http.NewRequest("POST", "/planet", bytes.NewBuffer([]byte(`{"name": "Earth","weather": "Hot","terrain": "Low"}`)))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	creationRecorder = httptest.NewRecorder()
+	handler = http.HandlerFunc(p.Create(formatter))
+
+	handler.ServeHTTP(creationRecorder, req)
+
+	if status := creationRecorder.Code; status != http.StatusConflict {
+		t.Errorf("Create Handler with not valid name returned wrong status code: got %v want %v",
+			status, http.StatusConflict)
+	}
+
 	req, err = http.NewRequest("DELETE", fmt.Sprintf("/planet/id/%s", planet.ID.Hex()), nil)
 
-	recorder := httptest.NewRecorder()
+	deleteRecorder := httptest.NewRecorder()
 	handler = http.HandlerFunc(p.Delete(formatter))
 
 	req = mux.SetURLVars(req, map[string]string{"id": planet.ID.Hex()})
 
-	handler.ServeHTTP(recorder, req)
+	handler.ServeHTTP(deleteRecorder, req)
 
-	if status := recorder.Code; status != http.StatusNoContent {
+	if status := deleteRecorder.Code; status != http.StatusNoContent {
 		t.Errorf("Was not possible to delete planet after create it. Got: %v, expeted: %v",
 			status, http.StatusNoContent)
 	}
@@ -75,32 +91,32 @@ func TestPlanetUpdateAndDeleteHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	creationRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(p.Create(formatter))
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(creationRecorder, req)
 
-	err = json.NewDecoder(rr.Body).Decode(&planet)
+	err = json.NewDecoder(creationRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content from creation %v", err)
 	}
 
-	if status := rr.Code; status != http.StatusCreated {
+	if status := creationRecorder.Code; status != http.StatusCreated {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusCreated)
 	}
 
 	req, err = http.NewRequest("PUT", fmt.Sprintf("/planet/id/%s", planet.ID.Hex()), bytes.NewBuffer([]byte(`{"name": "Mars","weather": "Hot","terrain": "Low"}`)))
 
-	recorder := httptest.NewRecorder()
+	updateRecorder := httptest.NewRecorder()
 	handler = http.HandlerFunc(p.Update(formatter))
 
 	req = mux.SetURLVars(req, map[string]string{"id": planet.ID.Hex()})
 
-	handler.ServeHTTP(recorder, req)
+	handler.ServeHTTP(updateRecorder, req)
 
-	err = json.NewDecoder(recorder.Body).Decode(&planet)
+	err = json.NewDecoder(updateRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content from updating %v", err)
@@ -110,7 +126,7 @@ func TestPlanetUpdateAndDeleteHandler(t *testing.T) {
 		t.Errorf("Planet name was not updated: Got %v, expeted %v", planet.Name, "Mars")
 	}
 
-	if status := recorder.Code; status != http.StatusOK {
+	if status := updateRecorder.Code; status != http.StatusOK {
 		t.Errorf("Was not possible to update planet after create it. Got: %v, expeted: %v",
 			status, http.StatusOK)
 	}
@@ -146,18 +162,18 @@ func TestSearchHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	searchRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(p.Search(formatter))
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(searchRecorder, req)
 
-	err = json.NewDecoder(rr.Body).Decode(&planets)
+	err = json.NewDecoder(searchRecorder.Body).Decode(&planets)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
 	}
 
-	if status := rr.Code; status != http.StatusOK {
+	if status := searchRecorder.Code; status != http.StatusOK {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
@@ -179,38 +195,38 @@ func TestPlanetLookupHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	creationRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(p.Create(formatter))
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(creationRecorder, req)
 
-	err = json.NewDecoder(rr.Body).Decode(&planet)
+	err = json.NewDecoder(creationRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
 	}
 
-	if status := rr.Code; status != http.StatusCreated {
+	if status := creationRecorder.Code; status != http.StatusCreated {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusCreated)
 	}
 
 	req, err = http.NewRequest("GET", fmt.Sprintf("/planet/id/%s", planet.ID.Hex()), nil)
 
-	recorder := httptest.NewRecorder()
+	lookupRecorder := httptest.NewRecorder()
 	handler = http.HandlerFunc(p.Lookup(formatter))
 
 	req = mux.SetURLVars(req, map[string]string{"id": planet.ID.Hex()})
 
-	handler.ServeHTTP(recorder, req)
+	handler.ServeHTTP(lookupRecorder, req)
 
-	err = json.NewDecoder(recorder.Body).Decode(&planet)
+	err = json.NewDecoder(lookupRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
 	}
 
-	if status := recorder.Code; status != http.StatusOK {
+	if status := lookupRecorder.Code; status != http.StatusOK {
 		t.Errorf("Was not possible to lookup planet after create it. Got: %v, expeted: %v",
 			status, http.StatusOK)
 	}
@@ -255,18 +271,18 @@ func TestPlanetCreateForNotValidBody(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		rr := httptest.NewRecorder()
+		creationRecorder := httptest.NewRecorder()
 		handler := http.HandlerFunc(p.Create(formatter))
 
-		handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(creationRecorder, req)
 
-		err = json.NewDecoder(rr.Body).Decode(&planet)
+		err = json.NewDecoder(creationRecorder.Body).Decode(&planet)
 
 		if err != nil {
 			t.Errorf("Was not possible to parse payload content %v", err)
 		}
 
-		if status := rr.Code; status != http.StatusBadRequest {
+		if status := creationRecorder.Code; status != http.StatusBadRequest {
 			t.Errorf("Create Handler returned wrong status code: got %v want %v",
 				status, http.StatusBadRequest)
 		}
@@ -288,18 +304,18 @@ func TestPlanetSearchByName(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	creationRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(p.Create(formatter))
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(creationRecorder, req)
 
-	err = json.NewDecoder(rr.Body).Decode(&planet)
+	err = json.NewDecoder(creationRecorder.Body).Decode(&planet)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
 	}
 
-	if status := rr.Code; status != http.StatusCreated {
+	if status := creationRecorder.Code; status != http.StatusCreated {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusCreated)
 	}
@@ -310,14 +326,14 @@ func TestPlanetSearchByName(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	recorder := httptest.NewRecorder()
+	searchRecorder := httptest.NewRecorder()
 	handler = http.HandlerFunc(p.Search(formatter))
 
-	handler.ServeHTTP(recorder, req)
+	handler.ServeHTTP(searchRecorder, req)
 
 	var planets []domain.Planet
 
-	err = json.NewDecoder(recorder.Body).Decode(&planets)
+	err = json.NewDecoder(searchRecorder.Body).Decode(&planets)
 
 	if err != nil {
 		t.Errorf("Was not possible to parse payload content %v", err)
@@ -332,7 +348,7 @@ func TestPlanetSearchByName(t *testing.T) {
 			planets[0].Name, planet.Name)
 	}
 
-	if status := recorder.Code; status != http.StatusOK {
+	if status := searchRecorder.Code; status != http.StatusOK {
 		t.Errorf("Create Handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
