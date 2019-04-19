@@ -1,0 +1,89 @@
+{
+	"ImportPath": "github.com/yagoazedias/star-wars-planets-api",
+	"GoVersion": "go1.11",
+	"GodepVersion": "v80",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/asaskevich/govalidator",
+			"Comment": "v9-26-gf9ffefc",
+			"Rev": "f9ffefc3facfbe0caee3fea233cbb6e8208f4541"
+		},
+		{
+			"ImportPath": "github.com/go-stack/stack",
+			"Comment": "v1.8.0",
+			"Rev": "2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.6.2-19-gf3ff42f",
+			"Rev": "f3ff42f93a451d7ffb2ff11cb9485f3f88089c83"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/bson",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/bson/bsoncodec",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/bson/bsonrw",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/bson/bsontype",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/bson/primitive",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/mongodb/mongo-go-driver/x/bsonx/bsoncore",
+			"Comment": "v0.2.0-1-g80e6fbd",
+			"Rev": "80e6fbdb941cebf741d02e5e848585d2d06ee8d2"
+		},
+		{
+			"ImportPath": "github.com/unrolled/render",
+			"Rev": "4c664cb3ad2f9856d1debd49977df56221ab45a9"
+		},
+		{
+			"ImportPath": "github.com/urfave/negroni",
+			"Comment": "v1.0.0-22-g7183f09",
+			"Rev": "7183f09c600e83777e78b44b39fcccab3b8c0dad"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2",
+			"Comment": "r2016.08.01-7-g9856a29",
+			"Rev": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/bson",
+			"Comment": "r2016.08.01-7-g9856a29",
+			"Rev": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/json",
+			"Comment": "r2016.08.01-7-g9856a29",
+			"Rev": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/sasl",
+			"Comment": "r2016.08.01-7-g9856a29",
+			"Rev": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/scram",
+			"Comment": "r2016.08.01-7-g9856a29",
+			"Rev": "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+		}
+	]
+}
