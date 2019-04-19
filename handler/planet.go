@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/unrolled/render"
 	"github.com/yagoazedias/star-wars-planets-api/service"
-	"net/http"
 )
 
 type Planet struct {
