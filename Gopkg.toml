@@ -52,3 +52,4 @@
 [prune]
   go-tests = true
   unused-packages = true
+  root-packages = main
